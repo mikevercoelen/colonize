@@ -1,0 +1,55 @@
+{
+  "name": "colonize",
+  "version": "0.0.1",
+  "description": "Scalable Mongoose seeding",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikevercoelen/colonize.git"
+  },
+  "keywords": [
+    "colonize",
+    "mongoose",
+    "seeding",
+    "mongodb"
+  ],
+  "author": "Mike Vercoelen <mike.vercoelen@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikevercoelen/colonize/issues"
+  },
+  "homepage": "https://github.com/mikevercoelen/colonize#readme",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "prepush": "npm run lint-fix"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": "^8.9.1",
+    "npm": "^5.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.2.0",
+    "mongoose": "^5.2.5"
+  },
+  "dependencies": {
+    "debug": "^3.1.0"
+  },
+  "peerDependencies": {
+    "mongoose": ">=4.4.9"
+  }
+}
