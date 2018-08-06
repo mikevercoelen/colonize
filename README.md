@@ -1,6 +1,6 @@
 # Colonize
 
-Scalable Mongoose seeding:
+Scalable Mongoose seeding
 
 * Modular seeding: split your seeding into multiple files
 * Dynamic seeding with relationships between seeding files
@@ -13,10 +13,10 @@ npm install colonize --save-dev
 
 ## Usage
 
-We're gonna demonstrate the usage by the demo setup which exists in the `test` folder, so check that out for a full example.
+We're gonna demonstrate the usage by the demo setup which exists in the [`test`](https://github.com/mikevercoelen/colonize/tree/master/test) folder, so check that out for a full example.
 
-* Create a folder called `seeding` (feel free to use a different name) in your test folder
-* Create your first seeding file in the folder, let's say organisation. So we now have `test/seeding/organisation.js`
+* Create your `seeding` folder, for example: `./test/seeding`
+* Create your first seeding file in the folder, let's say organisation.
 
 `test/seeding/organisation.js`
 ```js
@@ -61,7 +61,7 @@ module.exports = [
 
 Now let's create `test/seeding/index.js`, the main file that exports all the seeding files.
 
-*NOTE*: This file is important because the order that is defined in this file, defines the order of all the seeds to be ran.
+**NOTE**: This file is important because the order that is defined in this file, defines the order of all the seeds to be ran.
 
 `test/seeding/index.js`
 ```js
@@ -77,7 +77,7 @@ module.exports = [{
 }]
 ```
 
-Now we have to set everything up in your tests file. This is most likely the file where you define your global Mocha `before` and `after` hooks.
+Now lets setup the seeding. If you'r using Mocha: create a file that is required in all the tests which defines a global `before` and `after` hook
 
 `setup.mocha.js`
 ```js
@@ -99,13 +99,34 @@ const colonization = colonize.initialize({
 before(async () => {
   const { refs, stash } = await colonization.seed()
 
+  // Once you set them here, you can use these in your tests to refer to all the created data ;)
   global.stash = stash
   global.refs = refs
 })
 
+// Don't forget to call `close`
 after(async () => {
   await colonization.close()
 })
 ```
 
 That's it, you're all setup.
+
+Now let's take a look at how you can use this in an example test:
+
+`users.test.js`
+```js
+const request = require('supertest')
+const expect = require('expect')
+
+describe('GET /users/:id', () => {
+  it('should correctly return a user', () => {
+    // As you can see, this is how you can use refs to refer to seeded entities
+    const primaryUserId = global.refs.users.primary._id
+
+    return request
+      .get(`/users/${primaryUserId`)
+      .expect(200)
+  })
+})
+```
