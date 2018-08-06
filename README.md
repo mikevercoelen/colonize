@@ -15,6 +15,49 @@ npm install colonize --save-dev
 
 We're gonna demonstrate the usage by the demo setup which exists in the [`test`](https://github.com/mikevercoelen/colonize/tree/master/test) folder, so check that out for a full example.
 
+Let's take a look at the following example Mongoose models:
+
+`models/organisation.js`
+```js
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const organisationSchema = new Schema({
+  name: {
+    type: String
+  }
+})
+
+const Organisation = mongoose.model('Organisation', organisationSchema)
+
+module.exports = Organisation
+```
+
+`models/user.js`
+```js
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const userSchema = new Schema({
+  email: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  ownedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'Organisation'
+  }
+})
+
+const User = mongoose.model('User', userSchema)
+
+module.exports = User
+```
+
+As you can see, the `User` model has an `ownedBy` field which refers to an organisation. So when we have seeding we want to have a setup that supports these kinds of situations, and that's exactly why `colonize` is perfect. It's super small (only about 200 loc) and smart.
+
 * Create your `seeding` folder, for example: `./test/seeding`
 * Create your first seeding file in the folder, let's say organisation.
 
