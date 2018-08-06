@@ -1,4 +1,4 @@
-const initialize = require('./src/index')
+const initialize = require('./src/initialize')
 
 module.exports = {
   initialize

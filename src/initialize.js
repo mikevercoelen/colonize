@@ -3,7 +3,7 @@ const debug = require('debug')('colonize')
 
 const initialize = ({
   mongoUrl,
-  seedDirectory,
+  seedingPath,
   dropDatabase = true,
   connectionWhitelist
 }) => {
@@ -23,7 +23,9 @@ const initialize = ({
       throw new Error('Was trying to drop the database, but was not connected to the test database.')
     }
 
-    if (!connectionWhitelist.includes(mongoose.connection.host)) {
+    // console.log(mongoose.connection.host)
+
+    if (!connectionWhitelist.includes(mongoose.connection.client.s.url)) {
       throw new Error('Was trying to a non-whitelisted database, cancelled.')
     }
 
@@ -58,8 +60,8 @@ const initialize = ({
     dropDatabase && await drop()
     debug(`Dropped the database`)
 
-    const seeding = require(seedDirectory)
-    debug(`Loaded seeding directory: '${seedDirectory}'`)
+    const seeding = require(seedingPath)
+    debug(`Loaded seeding directory: '${seedingPath}'`)
 
     if (!Array.isArray(seeding)) {
       throw new Error('Seeding main file file did not export an array')
@@ -88,13 +90,11 @@ const initialize = ({
         throw new Error(getSeedingFileError(seedName, `was missing required 'entities' property`))
       }
 
-      let model = null
-
-      try {
-        model = seedObject.model()
-      } catch (error) {
-        throw new Error(getSeedingFileError(seedName, `could not execute the model function`))
+      if (typeof seedObject.model !== 'function') {
+        throw new Error(getSeedingFileError(seedName, `'model' was not a function, it should be a function that returns the model`))
       }
+
+      const model = seedObject.model()
 
       if (!model.create || typeof model.create !== 'function') {
         throw new Error(getSeedingFileError(seedName, `model was invalid (did not have an create function)`))
