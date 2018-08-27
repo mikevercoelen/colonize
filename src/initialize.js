@@ -13,23 +13,27 @@ const initialize = ({
 
   let hasConnected = false
 
-  const connect = () => mongoose.connect(mongoUrl, {
-    useNewUrlParser: true,
-    promiseLibrary: global.Promise
-  })
+  const connect = async () => {
+    await mongoose.connect(mongoUrl, {
+      useNewUrlParser: true,
+      promiseLibrary: global.Promise
+    })
+
+    hasConnected = true
+    debug(`Connected to ${mongoUrl}`)
+  }
 
   const drop = async () => {
     if (!hasConnected) {
       throw new Error('Was trying to drop the database, but was not connected to the test database.')
     }
 
-    // console.log(mongoose.connection.host)
-
     if (!connectionWhitelist.includes(mongoose.connection.client.s.url)) {
       throw new Error('Was trying to a non-whitelisted database, cancelled.')
     }
 
     await mongoose.connection.db.dropDatabase()
+    debug(`Dropped the database`)
   }
 
   const close = async () => {
@@ -50,15 +54,19 @@ const initialize = ({
 
     await mongoose.disconnect()
 
-    debug(`Connection closed.`)
+    hasConnected = false
+
+    debug(`Connection closed`)
   }
 
   const seed = async () => {
-    await connect()
-    debug(`Connected to ${mongoUrl}`)
-    hasConnected = true
-    dropDatabase && await drop()
-    debug(`Dropped the database`)
+    if (!hasConnected) {
+      await connect()
+    }
+
+    if (dropDatabase) {
+      await drop()
+    }
 
     const seeding = require(seedingPath)
     debug(`Loaded seeding directory: '${seedingPath}'`)
@@ -73,7 +81,7 @@ const initialize = ({
     const getSeedFilePath = seedName => `seeding/${seedName}.js`
     const getSeedingFileError = (seedName, message) => `In seeding file '${getSeedFilePath(seedName)}' a seeding set ${message}`
 
-    const destructSeedObject = async (seedName, seedObject) => {
+    const destructSeedObject = (seedName, seedObject) => {
       if (!seedObject.refName) {
         throw new Error(getSeedingFileError(seedName, `was missing required 'refName' property`))
       }
@@ -153,7 +161,7 @@ const initialize = ({
             refName,
             entities,
             model
-          } = await destructSeedObject(seedName, seedObject)
+          } = destructSeedObject(seedName, seedObject)
 
           refs[refName] = {}
           stash[refName] = []
@@ -181,6 +189,9 @@ const initialize = ({
 
     debug(`Finished seeding`)
 
+    global.stash = stash
+    global.refs = refs
+
     return {
       stash,
       refs
@@ -189,7 +200,8 @@ const initialize = ({
 
   return {
     seed,
-    close
+    close,
+    connect
   }
 }
 
