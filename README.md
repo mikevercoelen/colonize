@@ -131,7 +131,7 @@ const mongoUrl = 'mongodb://127.0.0.1:27017/${pkg.name}-test'
 
 const colonization = colonize.initialize({
   mongoUrl,
-  seedDirectory: path.resolve(__dirname, './test/seeding'),
+  seedingPath: path.resolve(__dirname, './test/seeding'),
 
   // Connection whitelist is important, it's a list of allowed connections (this is to double check we're not seeding / dropping a live database)
   connectionWhitelist: [
