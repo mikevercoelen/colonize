@@ -125,6 +125,7 @@ Now lets setup the seeding. If you'r using Mocha: create a file that is required
 `setup.mocha.js`
 ```js
 const colonize = require('colonize')
+const path = require('path')
 const pkg = require('./package')
 
 const mongoUrl = 'mongodb://127.0.0.1:27017/${pkg.name}-test'
