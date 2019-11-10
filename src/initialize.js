@@ -18,6 +18,7 @@ const initialize = ({
     await mongoose.connect(mongoUrl, {
       useNewUrlParser: true,
       promiseLibrary: global.Promise,
+      useUnifiedTopology: true,
       ...mongooseConnectOptions
     })
 
