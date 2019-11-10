@@ -3,6 +3,7 @@ const debug = require('debug')('colonize')
 
 const initialize = ({
   mongoUrl,
+  mongooseConnectOptions,
   seedingPath,
   dropDatabase = true,
   connectionWhitelist
@@ -16,7 +17,8 @@ const initialize = ({
   const connect = async () => {
     await mongoose.connect(mongoUrl, {
       useNewUrlParser: true,
-      promiseLibrary: global.Promise
+      promiseLibrary: global.Promise,
+      ...mongooseConnectOptions
     })
 
     hasConnected = true
@@ -33,7 +35,7 @@ const initialize = ({
     }
 
     await mongoose.connection.db.dropDatabase()
-    debug(`Dropped the database`)
+    debug('Dropped the database')
   }
 
   const close = async () => {
@@ -56,7 +58,7 @@ const initialize = ({
 
     hasConnected = false
 
-    debug(`Connection closed`)
+    debug('Connection closed')
   }
 
   const seed = async () => {
@@ -83,11 +85,11 @@ const initialize = ({
 
     const destructSeedObject = (seedName, seedObject) => {
       if (!seedObject.refName) {
-        throw new Error(getSeedingFileError(seedName, `was missing required 'refName' property`))
+        throw new Error(getSeedingFileError(seedName, 'was missing required \'refName\' property'))
       }
 
       if (!seedObject.model) {
-        throw new Error(getSeedingFileError(seedName, `was missing required 'model' property`))
+        throw new Error(getSeedingFileError(seedName, 'was missing required \'model\' property'))
       }
 
       if (typeof seedObject.model !== 'function') {
@@ -95,25 +97,25 @@ const initialize = ({
       }
 
       if (!seedObject.entities) {
-        throw new Error(getSeedingFileError(seedName, `was missing required 'entities' property`))
+        throw new Error(getSeedingFileError(seedName, 'was missing required \'entities\' property'))
       }
 
       if (typeof seedObject.model !== 'function') {
-        throw new Error(getSeedingFileError(seedName, `'model' was not a function, it should be a function that returns the model`))
+        throw new Error(getSeedingFileError(seedName, '\'model\' was not a function, it should be a function that returns the model'))
       }
 
       const model = seedObject.model()
 
       if (!model.create || typeof model.create !== 'function') {
-        throw new Error(getSeedingFileError(seedName, `model was invalid (did not have an create function)`))
+        throw new Error(getSeedingFileError(seedName, 'model was invalid (did not have an create function)'))
       }
 
       if (!seedObject.refName) {
-        throw new Error(getSeedingFileError(seedName, `was missing required 'refName' property`))
+        throw new Error(getSeedingFileError(seedName, 'was missing required \'refName\' property'))
       }
 
       if (typeof seedObject.refName !== 'string') {
-        throw new Error(getSeedingFileError(seedName, `'refName' property was not a string`))
+        throw new Error(getSeedingFileError(seedName, '\'refName\' property was not a string'))
       }
 
       return {
@@ -125,11 +127,11 @@ const initialize = ({
 
     const destructEntity = (seedName, entity) => {
       if (!entity.data) {
-        throw new Error(getSeedingFileError(seedName, `an entity was missing required 'data' property`))
+        throw new Error(getSeedingFileError(seedName, 'an entity was missing required \'data\' property'))
       }
 
       if (entity.refName && typeof entity.refName !== 'string') {
-        throw new Error(getSeedingFileError(seedName, `an entity's 'refName' property was not a string`))
+        throw new Error(getSeedingFileError(seedName, 'an entity\'s \'refName\' property was not a string'))
       }
 
       return {
@@ -187,7 +189,7 @@ const initialize = ({
       }
     }
 
-    debug(`Finished seeding`)
+    debug('Finished seeding')
 
     global.stash = stash
     global.refs = refs
