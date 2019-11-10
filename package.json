@@ -1,6 +1,6 @@
 {
   "name": "colonize",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Scalable Mongoose seeding",
   "repository": {
     "type": "git",

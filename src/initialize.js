@@ -51,8 +51,8 @@ const initialize = ({
     }
 
     await Promise.all(mongoose.modelNames().map(model => {
-      debug(`Ensuring index for model: ${model}`)
-      return mongoose.model(model).ensureIndexes()
+      debug(`Creating indexes for model: ${model}`)
+      return mongoose.model(model).createIndexes()
     }))
 
     await mongoose.disconnect()
