@@ -104,7 +104,7 @@ const initialize = ({
         throw new Error(getSeedingFileError(seedName, '\'model\' was not a function, it should be a function that returns the model'))
       }
 
-      const model = seedObject.model()
+      const model = typeof seedObject.model === 'function' ? seedObject.model() : seedObject.model
 
       if (!model.create || typeof model.create !== 'function') {
         throw new Error(getSeedingFileError(seedName, 'model was invalid (did not have an create function)'))
